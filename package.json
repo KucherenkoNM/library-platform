@@ -18,7 +18,9 @@
     "prisma:validate": "pnpm --filter @chitay/api prisma:validate",
     "prisma:migrate": "pnpm --filter @chitay/api prisma:migrate",
     "prisma:migrate:dev": "pnpm --filter @chitay/api prisma:migrate:dev",
-    "check": "pnpm prisma:validate && pnpm typecheck && pnpm lint && pnpm test && pnpm build"
+    "check": "pnpm prisma:validate && pnpm typecheck && pnpm lint && pnpm test && pnpm test:integration && pnpm build",
+    "test:integration": "pnpm --filter @chitay/api test:integration",
+    "prisma:seed": "pnpm --filter @chitay/api prisma:seed"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",

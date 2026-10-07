@@ -9,6 +9,7 @@ export default tseslint.config(
     ignores: [
       '**/dist/**',
       '**/coverage/**',
+      '**/.seed-dist/**',
       '**/node_modules/**',
       'apps/api/src/generated/prisma/**',
     ],
@@ -27,10 +28,7 @@ export default tseslint.config(
       },
     },
     rules: {
-      '@typescript-eslint/no-misused-promises': [
-        'error',
-        { checksVoidReturn: false },
-      ],
+      '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: false }],
       '@typescript-eslint/require-await': 'off',
     },
   },
@@ -61,10 +59,7 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     },
   },
 

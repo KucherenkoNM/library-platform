@@ -8,11 +8,13 @@
     "build": "prisma generate && nest build",
     "start": "node dist/main.js",
     "typecheck": "prisma generate && tsc --noEmit -p tsconfig.json",
-    "test": "vitest run",
+    "test": "vitest run src",
     "prisma:generate": "prisma generate",
     "prisma:validate": "prisma validate",
     "prisma:migrate": "prisma migrate deploy",
-    "prisma:migrate:dev": "prisma migrate dev"
+    "prisma:migrate:dev": "prisma migrate dev",
+    "test:integration": "vitest run test/integration --maxWorkers=1",
+    "prisma:seed": "prisma generate && tsc -p tsconfig.seed.json && node .seed-dist/database/seed.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.0.0",

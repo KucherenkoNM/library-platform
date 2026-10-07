@@ -2,10 +2,13 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 import { validateEnv } from './config/env.js';
+import { BranchesModule } from './branches/branches.module.js';
 import { HealthModule } from './health/health.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
+import { RbacModule } from './rbac/rbac.module.js';
 import { RedisModule } from './redis/redis.module.js';
 import { StorageModule } from './storage/storage.module.js';
+import { TenancyModule } from './tenancy/tenancy.module.js';
 
 @Module({
   imports: [
@@ -33,6 +36,9 @@ import { StorageModule } from './storage/storage.module.js';
     PrismaModule,
     RedisModule,
     StorageModule,
+    TenancyModule,
+    RbacModule,
+    BranchesModule,
     HealthModule,
   ],
 })

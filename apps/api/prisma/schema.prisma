@@ -6,3 +6,150 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Library {
+  id               String            @id @default(uuid()) @db.Uuid
+  name             String
+  slug             String            @unique
+  email            String
+  phone            String
+  address          String
+  status           String
+  createdAt        DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime          @updatedAt @db.Timestamptz(3)
+  branches         Branch[]
+  users            User[]
+  roles            Role[]
+  settings         LibrarySettings?
+  circulationRules CirculationRule[]
+  auditLogs        AuditLog[]
+}
+
+model Branch {
+  id               String            @id @default(uuid()) @db.Uuid
+  libraryId        String            @db.Uuid
+  name             String
+  address          String
+  phone            String
+  email            String
+  isActive         Boolean
+  createdAt        DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime          @updatedAt @db.Timestamptz(3)
+  library          Library           @relation(fields: [libraryId], references: [id], onDelete: Restrict)
+  circulationRules CirculationRule[]
+
+  @@unique([libraryId, name])
+  @@unique([libraryId, id])
+  @@index([libraryId])
+}
+
+model User {
+  id           String     @id @default(uuid()) @db.Uuid
+  libraryId    String     @db.Uuid
+  email        String     @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  middleName   String?
+  phone        String?
+  status       String
+  lastLoginAt  DateTime?  @db.Timestamptz(3)
+  createdAt    DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime   @updatedAt @db.Timestamptz(3)
+  library      Library    @relation(fields: [libraryId], references: [id], onDelete: Restrict)
+  userRoles    UserRole[]
+  auditLogs    AuditLog[]
+
+  @@index([libraryId])
+}
+
+model Role {
+  id              String           @id @default(uuid()) @db.Uuid
+  libraryId       String?          @db.Uuid
+  name            String
+  code            String
+  isSystem        Boolean
+  library         Library?         @relation(fields: [libraryId], references: [id], onDelete: Restrict)
+  userRoles       UserRole[]
+  rolePermissions RolePermission[]
+
+  @@unique([libraryId, code])
+  @@index([libraryId])
+}
+
+model Permission {
+  id              String           @id @default(uuid()) @db.Uuid
+  code            String           @unique
+  name            String
+  rolePermissions RolePermission[]
+}
+
+model UserRole {
+  userId String @db.Uuid
+  roleId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@index([roleId])
+}
+
+model RolePermission {
+  roleId       String     @db.Uuid
+  permissionId String     @db.Uuid
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@index([permissionId])
+}
+
+model LibrarySettings {
+  libraryId     String   @id @db.Uuid
+  timezone      String
+  defaultLocale String
+  updatedAt     DateTime @updatedAt @db.Timestamptz(3)
+  library       Library  @relation(fields: [libraryId], references: [id], onDelete: Cascade)
+}
+
+model CirculationRule {
+  id                  String   @id @default(uuid()) @db.Uuid
+  libraryId           String   @db.Uuid
+  branchId            String?  @db.Uuid
+  readerType          String?
+  defaultLoanDays     Int
+  maxBooksPerReader   Int
+  maxRenewals         Int
+  reservationHoldDays Int
+  blockOnOverdue      Boolean
+  allowReservations   Boolean
+  allowRenewals       Boolean
+  createdAt           DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt           DateTime @updatedAt @db.Timestamptz(3)
+  library             Library  @relation(fields: [libraryId], references: [id], onDelete: Restrict)
+  branch              Branch?  @relation(fields: [libraryId, branchId], references: [libraryId, id], onDelete: Restrict)
+
+  @@unique([libraryId, branchId])
+  @@index([libraryId])
+  @@index([branchId])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  libraryId  String   @db.Uuid
+  userId     String?  @db.Uuid
+  action     String
+  entityType String
+  entityId   String?  @db.Uuid
+  oldData    Json?    @db.JsonB
+  newData    Json?    @db.JsonB
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+  library    Library  @relation(fields: [libraryId], references: [id], onDelete: Restrict)
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([libraryId, createdAt(sort: Desc)])
+  @@index([entityType, entityId])
+  @@index([userId])
+}

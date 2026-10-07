@@ -28,15 +28,16 @@ jobs:
         run: cp .env.example .env
 
       - name: Start infrastructure
-        run: |
-          docker compose up -d --wait postgres redis minio
-          docker compose run --rm minio-init
+        run: docker compose up -d --wait postgres redis minio
 
       - name: Validate Prisma schema
         run: pnpm prisma:validate
 
       - name: Apply migrations
         run: pnpm prisma:migrate
+
+      - name: Seed Stage 1 data
+        run: pnpm prisma:seed
 
       - name: Typecheck
         run: pnpm typecheck
@@ -46,6 +47,9 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+      - name: Tenant isolation integration tests
+        run: pnpm test:integration
 
       - name: Build
         run: pnpm build
