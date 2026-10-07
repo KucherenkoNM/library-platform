@@ -1,0 +1,33 @@
+{
+  "name": "chitay-library-platform",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@12.10.0",
+  "engines": {
+    "node": ">=22.12.0 <25"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @chitay/api --filter @chitay/web dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint . --max-warnings=0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "pnpm -r test",
+    "prisma:generate": "pnpm --filter @chitay/api prisma:generate",
+    "prisma:validate": "pnpm --filter @chitay/api prisma:validate",
+    "prisma:migrate": "pnpm --filter @chitay/api prisma:migrate",
+    "prisma:migrate:dev": "pnpm --filter @chitay/api prisma:migrate:dev",
+    "check": "pnpm prisma:validate && pnpm typecheck && pnpm lint && pnpm test && pnpm build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-react-hooks": "^6.0.0",
+    "eslint-plugin-react-refresh": "^0.4.0",
+    "globals": "^16.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.0.0"
+  }
+}

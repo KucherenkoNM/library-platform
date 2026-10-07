@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.10.0
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Prepare development environment
+        run: cp .env.example .env
+
+      - name: Start infrastructure
+        run: |
+          docker compose up -d --wait postgres redis minio
+          docker compose run --rm minio-init
+
+      - name: Validate Prisma schema
+        run: pnpm prisma:validate
+
+      - name: Apply migrations
+        run: pnpm prisma:migrate
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: API smoke test
+        run: |
+          pnpm --filter @chitay/api start > /tmp/chitay-api.log 2>&1 &
+          API_PID=$!
+          trap 'kill $API_PID || true' EXIT
+
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://localhost:3000/health/live > /dev/null; then
+              break
+            fi
+            sleep 1
+          done
+
+          curl --fail --silent http://localhost:3000/health/live
+          curl --fail --silent http://localhost:3000/health/ready
+          curl --fail --silent http://localhost:3000/api/docs > /dev/null
+
+      - name: Show API log on failure
+        if: failure()
+        run: cat /tmp/chitay-api.log || true
+
+      - name: Stop infrastructure
+        if: always()
+        run: docker compose down -v
