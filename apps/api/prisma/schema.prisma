@@ -23,6 +23,8 @@ model Library {
   settings         LibrarySettings?
   circulationRules CirculationRule[]
   auditLogs        AuditLog[]
+  authSessions     AuthSession[]
+  invitations      Invitation[]
 }
 
 model Branch {
@@ -59,6 +61,8 @@ model User {
   library      Library    @relation(fields: [libraryId], references: [id], onDelete: Restrict)
   userRoles    UserRole[]
   auditLogs    AuditLog[]
+  authSessions AuthSession[]
+  createdInvitations Invitation[] @relation("InvitationCreatedBy")
 
   @@index([libraryId])
 }
@@ -152,4 +156,44 @@ model AuditLog {
   @@index([libraryId, createdAt(sort: Desc)])
   @@index([entityType, entityId])
   @@index([userId])
+}
+
+
+model AuthSession {
+  id                  String    @id @default(uuid()) @db.Uuid
+  libraryId           String    @db.Uuid
+  userId              String    @db.Uuid
+  familyId            String    @db.Uuid
+  tokenHash           String    @unique
+  expiresAt           DateTime  @db.Timestamptz(3)
+  lastUsedAt          DateTime? @db.Timestamptz(3)
+  revokedAt           DateTime? @db.Timestamptz(3)
+  revokeReason        String?
+  replacedBySessionId String?   @db.Uuid
+  ipAddress           String?
+  userAgent           String?
+  createdAt           DateTime  @default(now()) @db.Timestamptz(3)
+  library             Library   @relation(fields: [libraryId], references: [id], onDelete: Cascade)
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, revokedAt])
+  @@index([libraryId, userId])
+  @@index([familyId])
+  @@index([expiresAt])
+}
+
+model Invitation {
+  id              String    @id @default(uuid()) @db.Uuid
+  libraryId       String    @db.Uuid
+  email           String
+  tokenHash       String    @unique
+  expiresAt       DateTime  @db.Timestamptz(3)
+  acceptedAt      DateTime? @db.Timestamptz(3)
+  createdByUserId String    @db.Uuid
+  createdAt       DateTime  @default(now()) @db.Timestamptz(3)
+  library         Library   @relation(fields: [libraryId], references: [id], onDelete: Cascade)
+  createdByUser   User      @relation("InvitationCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  @@index([libraryId, email])
+  @@index([expiresAt])
 }

@@ -25,7 +25,7 @@ async function bootstrap(): Promise<void> {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Читай! Library Platform API')
     .setDescription('REST API for the multi-tenant library management platform.')
-    .setVersion('0.1.0-stage1')
+    .setVersion('0.2.0-stage2')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api/docs', app, document);

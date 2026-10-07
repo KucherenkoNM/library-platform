@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/components/ui/button.tsx","./src/config/env.spec.ts","./src/config/env.ts","./src/lib/utils.ts"],"version":"5.9.3"}
+{"root":["./src/app.tsx","./src/main.tsx","./src/auth/auth-api.ts","./src/auth/auth-context.tsx","./src/auth/auth.types.ts","./src/auth/protected-route.tsx","./src/components/ui/button.tsx","./src/config/env.spec.ts","./src/config/env.ts","./src/lib/utils.ts","./src/pages/loginpage.tsx","./src/pages/stage2protectedpage.tsx"],"version":"5.9.3"}

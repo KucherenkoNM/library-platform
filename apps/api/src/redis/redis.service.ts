@@ -31,6 +31,21 @@ export class RedisService implements OnModuleDestroy {
     }
   }
 
+  async incrementWithTtl(key: string, ttlSeconds: number): Promise<number> {
+    await this.connectIfNeeded();
+    const result = await this.client.eval(
+      'local value = redis.call("INCR", KEYS[1]); if value == 1 then redis.call("EXPIRE", KEYS[1], ARGV[1]); end; return value',
+      1,
+      key,
+      ttlSeconds.toString(),
+    );
+    const count = Number(result);
+    if (!Number.isFinite(count)) {
+      throw new Error('Unexpected Redis rate-limit response.');
+    }
+    return count;
+  }
+
   async onModuleDestroy(): Promise<void> {
     if (this.client.status !== 'end') {
       this.client.disconnect();

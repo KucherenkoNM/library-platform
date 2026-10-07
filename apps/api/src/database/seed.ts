@@ -41,7 +41,7 @@ const permissionNames: Record<PermissionCode, string> = {
 };
 
 const demoAdminPasswordHash =
-  '$argon2id$v=19$m=19456,t=2,p=1$MMpp3EiLDLxE+5QjBfPCSg$i3Ak24Kp7KRu1ZfsBZ/qYISKbqHyRUFQlUOTErTGNBY';
+  '$argon2id$v=19$m=65536,t=3,p=4$Pv06GJTA2S1R5jfp60HrpQ$agXnXGGH2n9w6fYlf8t+2lLQbD02NRbsUMf1NOMW7h0';
 
 async function seedPermissions(): Promise<Map<PermissionCode, string>> {
   const ids = new Map<PermissionCode, string>();

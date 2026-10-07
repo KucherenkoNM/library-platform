@@ -36,7 +36,10 @@ jobs:
       - name: Apply migrations
         run: pnpm prisma:migrate
 
-      - name: Seed Stage 1 data
+      - name: Seed Stage 2 demo data
+        run: pnpm prisma:seed
+
+      - name: Verify seed idempotency
         run: pnpm prisma:seed
 
       - name: Typecheck
@@ -48,7 +51,7 @@ jobs:
       - name: Test
         run: pnpm test
 
-      - name: Tenant isolation integration tests
+      - name: Tenant and authentication integration tests
         run: pnpm test:integration
 
       - name: Build

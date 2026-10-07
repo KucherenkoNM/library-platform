@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 import { validateEnv } from './config/env.js';
+import { AuthModule } from './auth/auth.module.js';
 import { BranchesModule } from './branches/branches.module.js';
 import { HealthModule } from './health/health.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
@@ -34,6 +35,7 @@ import { TenancyModule } from './tenancy/tenancy.module.js';
       },
     }),
     PrismaModule,
+    AuthModule,
     RedisModule,
     StorageModule,
     TenancyModule,

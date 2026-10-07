@@ -13,6 +13,8 @@ const validEnv = {
   S3_SECRET_KEY: 'test-secret',
   S3_BUCKET: 'test-bucket',
   S3_FORCE_PATH_STYLE: 'true',
+  AUTH_ACCESS_TOKEN_SECRET: 'stage2-test-secret-with-at-least-32-characters',
+  AUTH_COOKIE_SECURE: 'false',
 };
 
 describe('validateEnv', () => {
